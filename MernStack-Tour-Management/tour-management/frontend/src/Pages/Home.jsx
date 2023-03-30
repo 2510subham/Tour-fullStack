@@ -15,7 +15,6 @@ import Testimonial from '../components/Testimonial/Testimonial'
 import NewsLetter from '../Shared/NewsLetter'
 const Home = () => {
   return (
-
     <>
     <section>
     <Container>
@@ -51,7 +50,7 @@ const Home = () => {
     </Container>
     </section>
                                    {/* home section start */}
-    <section>
+    <section id="about">
       <Container>
         <Row>
           <Col ls='3'>
