@@ -8,7 +8,7 @@ import worldImg from "../assets/images/world.png"
 import Subtitle from '../Shared/Subtitle'
 import Searchbar from '../Shared/Searchbar'
 import Servicelist from '../services/Servicelist'
-import FeaturedTourList from '../featured-tour/FeaturedTourList'
+import FeaturedTourList from '../components/featured-tour/FeaturedTourList';
 import experienceImg from "../assets/images/experience.png" 
 import MasonaryImagesGallery from '../components/image-gallery/MasonaryImagesGallery'
 import Testimonial from '../components/Testimonial/Testimonial'
