@@ -2,17 +2,39 @@ import React,{useState,useEffect} from 'react'
 import CommonSection from '../Shared/CommonSection.jsx'
 import "../styles/tour.css";
 import NewsLetter from '../Shared/NewsLetter.jsx';
-import tourData from '../assets/data/tours'
+// import tourData from '../assets/data/tours'
 import TourCard from '../Shared/TourCard';
 import Searchbar from '../Shared/Searchbar.jsx';
 import { Container,Row,Col } from 'reactstrap';
+import useFetch from '../hooks/useFetch.js';
+import { BASE_URL } from '../utils/Config.js';
+
 const Tours = () => {
   const [pagecount,setpagecount]=useState(0);
   const [page,setpage]=useState(0);
+  const {
+    data:tours,
+    loading,
+    error
+  }=useFetch(`${BASE_URL}/tours?page=${page}`);
+  // console.log(tours);
+  let value=tours;
+    if(tours.data){
+        value=tours.data;
+    }
+  const {data:tourCounts}=useFetch(`${BASE_URL}/tours/search/gettourcount`)
+  let tourCount=tourCounts;
+  if(tourCounts.data){
+    tourCount=tourCounts.data;
+  }
+  console.log(tourCount);
+
   useEffect(() => {
-   const pages=Math.ceil(5/2);//later we will use backend data count
+   const pages=Math.ceil(tourCount/8);//later we will use backend data count
    setpagecount(pages);
-  }, [page])
+   window.scrollTo(0,0);
+  }, [page,tourCount,value])
+
   
   return ( 
     <>
@@ -26,10 +48,14 @@ const Tours = () => {
       </section>
       <section className='pt-0'>
         <Container>
-          <Row>
+          {loading && <h4 className='text-center pt-5'> Loading....</h4>}
+          {error && <h4 className='text-center pt-5'>{error}</h4>}
+
+          {
+            !loading && !error && <Row>
             {
-              tourData.map((tour,index)=>(
-                <Col lg='3' className='mb-4' key={index}>
+              value?.map((tour)=>(
+                <Col lg='3' className='mb-4' key={tour._id}>
                   <TourCard tour={tour}/>
                 </Col>
               ))
@@ -48,6 +74,7 @@ const Tours = () => {
               </div>
             </Col>
           </Row>
+          }
         </Container>
       </section>
       <NewsLetter/>
