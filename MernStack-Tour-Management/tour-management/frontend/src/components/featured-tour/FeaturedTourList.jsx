@@ -7,12 +7,12 @@ import { BASE_URL } from '../../utils/Config'
 const FeaturedTourList = () => {
     //data coming afetr hitting api from  mongodb 
 
-    const {data:featuredTour,loading,error}=useFetch(`${BASE_URL}/tours/search/getfeaturedtours`);
-    console.log(featuredTour.data);
-    let value=featuredTour;
-    if(featuredTour.data){
-        value=featuredTour.data;
-    }
+    const {data,loading,error}=useFetch(`${BASE_URL}/tours/search/getfeaturedtours`);
+    console.log(data);
+    // let value=featuredTour;
+    // if(featuredTour.data){
+    //     value=featuredTour.data;
+    // }
   return (
    <>
         {
@@ -22,7 +22,7 @@ const FeaturedTourList = () => {
             error && <h4>{error}</h4>
         }
     {
-        !loading && !error && value.map((tour,index)=>(
+        !loading && !error && data?.map((tour,index)=>(
             <Col className='mb-4' lg='3' key={index}>
                 <TourCard tour={tour}/>
             </Col>

@@ -16,7 +16,7 @@ export const createtour=async (req,res)=>{
 
 //update tour
 export const updatetour=async (req,res)=>{
-    const id=req.params.id;
+    let id=req.params.id;
     try {
         const updated=await Tour.findByIdAndUpdate(id,{$set:req.body},{new:true})
         res.status(200).json({success:true,message:"successfully updated tour",data:updated});
@@ -29,7 +29,7 @@ export const updatetour=async (req,res)=>{
 
 //delete tour
 export const deletetour=async (req,res)=>{
-    const id=req.params.id;
+    let id=req.params.id;
 
     try {
         const deleted=await Tour.findByIdAndDelete(id);
@@ -42,10 +42,12 @@ export const deletetour=async (req,res)=>{
 
 //getsingle tour
 export const getsingletour=async (req,res)=>{
-    const id=req.params.id;
+    let ids=req.params.id;
+    console.log(ids)
     try {
-        const getone=await Tour.findById(id).populate('reviews');
-        res.stats(200).send({success:true,message:"successfully get single tour",data:getone})
+        const getone=await Tour.findById(ids).populate('reviews');
+        console.log(getone);
+        res.status(200).send({success:true,message:"successfully get single tour",data:getone})
     } catch (error) {
         res.status(404).send({success:false,message:"failed to get single tour",error:error})
     }
