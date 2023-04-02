@@ -1,9 +1,12 @@
-import React,{useState} from 'react'
+import React,{useState,useContext} from 'react'
+import { useNavigate } from 'react-router-dom';
 import "../styles/login.css"
 import {Container,Row,Col,Form,FormGroup,Button} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import registerimg from "../assets/images/register.png";
 import userIcon from "../assets/images/user.png";
+import { authContext } from '../context/authContext';
+import { BASE_URL } from '../utils/Config';
 
 const Register = () => {
   const [credentials, setcredentials] = useState({
@@ -11,11 +14,35 @@ const Register = () => {
    email:undefined,
    password:undefined
   })
+
+  const {dispatch} = useContext(authContext);//we are using dispatch here to dispatch the action to auth context
+  const navigate=useNavigate();
   const handlechange=(e)=>{
     setcredentials(prev=>({...prev,[e.target.id]:e.target.value}))
   };
-  const handleClick=(e)=>{
+  const handleClick=async (e)=>{
     e.preventDefault();
+
+    try{
+      const res=await fetch(`${BASE_URL}/auth/register`,{
+        method:'post',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify(credentials)
+      })
+      const result=await res.json();
+      if(!res.ok)
+      {
+        alert(result.message)
+      }
+      dispatch({type:'REGISTER_SUCCESS'})//we pass type :'..' this will goto auth context page and there it matches it with switch cases
+      navigate('/login')
+    }catch(err)
+    {
+      alert(err.message)
+    }
+
 
   }
   return (
@@ -32,7 +59,7 @@ const Register = () => {
                   <img src={userIcon} alt="" />
                 </div>
                 <h2>Register</h2>
-                <Form onSubmit={handleClick}>
+                <Form onSubmit={handleClick} method='POST'>
                 <FormGroup>
                     <input type="text" placeholder="User Name" required id="username" onChange={handlechange} />
                   </FormGroup>
