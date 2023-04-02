@@ -1,29 +1,54 @@
-import React,{useState} from 'react'
+import React,{useState,useContext} from 'react'
 import './booking.css'
 import { useNavigate } from 'react-router-dom'
 import {Form,FormGroup,ListGroup,ListGroupItem,Button } from 'reactstrap'
-
+import {authContext} from '../../context/authContext'
+import {BASE_URL} from '../../utils/Config.js'
 const Booking = ({tour,avgRating}) => {
-  const {price,reviews}=tour;
-  const [credentials, setcredentials] = useState({
-    userId:'01',//later it will be dynamic
-    userEmail:'subahm@subham.com',
+  const {price,reviews,title}=tour;
+  const {user}=useContext(authContext);
+  const [booking, setBooking] = useState({
+    userId:user && user._id,
+    userEmail:user && user.email,
+    tourName:title,
     fullName:'',
     phone:'',
     guestSize:1,
     bookAt:''
   })
   const handlechange=(e)=>{
-    setcredentials(prev=>({...prev,[e.target.id]:e.target.value}))
+    setBooking(prev=>({...prev,[e.target.id]:e.target.value}))
   };
 
   const serviceFee=10;
   const navigate=useNavigate();
-  const totalamount=Number(price)*Number(credentials.guestSize)+Number(serviceFee)
+  const totalamount=Number(price)*Number(booking.guestSize)+Number(serviceFee)
   //send data to the server;
-  const handleClick=(e)=>{
+  const handleClick=async(e)=>{
     e.preventDefault();
-    navigate("/thank-you");
+    console.log('booking');
+    try{
+      if(!user || user===undefined ||user===null)
+      {
+        alert('Please sign in');
+      }
+      const res=await fetch(`${BASE_URL}/booking`,{
+        method:'post',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify(booking)
+      })
+      const result=await res.json();
+      if(!res.ok)
+      {
+        return alert(result.message);
+      }
+      navigate("/thank-you");
+    }catch(err)
+    {
+      alert(err.message);
+    }
   }
   return (
     <div className="booking">
@@ -58,9 +83,9 @@ const Booking = ({tour,avgRating}) => {
         <ListGroup >
           <ListGroupItem className='border-0 px-0'>
               <h5 className='d-flex align-items-center gap-1'>
-                ${price} <i class="ri-close-line"></i> {credentials.guestSize} person
+                ${price} <i class="ri-close-line"></i> {booking.guestSize} person
               </h5>
-              <span>${Number(price)*Number(credentials.guestSize)}</span>
+              <span>${Number(price)*Number(booking.guestSize)}</span>
           </ListGroupItem>
           <ListGroupItem className='border-0 px-0'>
               <h5>Service charge</h5>
