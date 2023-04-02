@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect,useContext } from 'react'
 import "../styles/tour-details.css";
 import { Container, Row, Col, Form, ListGroup } from 'reactstrap'
 import { useParams } from 'react-router-dom';
@@ -9,12 +9,15 @@ import Booking from '../components/Booking/Booking';
 import NewsLetter from "../Shared/NewsLetter"
 import useFetch from '../hooks/useFetch';
 import { BASE_URL } from '../utils/Config.js';
+import {authContext} from '../context/authContext';
 
 const TourDetails =  () => {
   const { id } = useParams();
   console.log("id=",id);
   const reviewmsgref = useRef('');
   const [tourrating, settourrating] = useState(null);
+  const {user} = useContext(authContext);
+
   //fetch datafrom database
   const { data:tour,loading,error } =  useFetch(`${BASE_URL}/tours/${id}`)
 
@@ -26,10 +29,38 @@ const TourDetails =  () => {
   //format date
   const options = { day: 'numeric', month: 'long', year: 'numeric' }
   //submit request to server
-  const submithandler = (e) => {
+  const submithandler = async(e) => {
     e.preventDefault();
-    const reviewmsg = reviewmsgref.current.value;
-    //later we call api
+    const reviewText = reviewmsgref.current.value;
+    
+    try{
+      if(!user || user===undefined || user===null)
+      {
+        alert("please sign in")
+      }
+      const reviewobj={
+        username:user?.username,
+        reviewText,
+        rating:tourrating,
+      }
+      const res=await fetch(`${BASE_URL}/review/${id}`,{
+        method:'post',
+        headers:{
+          'content-type':'application/json',
+        },
+        credentials:'include',
+        body:JSON.stringify(reviewobj)
+      })
+      const result= await res.json();
+      if(!res.ok)
+      {
+        return alert(result.message);
+      }
+      alert(result.message);
+    }catch(err)
+    {
+      alert(err.message)
+    }
   }
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -114,14 +145,14 @@ const TourDetails =  () => {
                           <div className="w-100">
                             <div className="d-flex align-items-center justify-content-between">
                               <div>
-                                <h5>subham</h5>
-                                <p>{new Date("18-03-2023").toLocaleDateString("en-US", options)}</p>
+                                <h5>{review.username}</h5>
+                                <p>{new Date(review.createdAt).toLocaleDateString("en-US", options)}</p>
                               </div>
                               <span className='d-flex align-items-center'>
-                                5 <i class="ri-star-fill"></i>
+                                {review.rating} <i class="ri-star-fill"></i>
                               </span>
                             </div>
-                            <h6>Amazing tour</h6>
+                            <h6>{review.reviewText}</h6>
                           </div>
                         </div>
                       ))
