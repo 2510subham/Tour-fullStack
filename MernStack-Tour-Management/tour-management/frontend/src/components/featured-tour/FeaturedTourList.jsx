@@ -8,7 +8,7 @@ const FeaturedTourList = () => {
     //data coming afetr hitting api from  mongodb 
 
     const {data,loading,error}=useFetch(`${BASE_URL}/tours/search/getfeaturedtours`);
-    console.log(data);
+    // console.log(data);
     // let value=featuredTour;
     // if(featuredTour.data){
     //     value=featuredTour.data;
