@@ -36,7 +36,7 @@ const Home = () => {
             </div>
         </Col>
         <Col lg='2'>
-            <div className="hero__img-box mt-4">
+            <div className="hero__img-box hero__video-box mt-4">
               <video src={heroVideo} alt="hero" controls />
             </div>
         </Col>
@@ -114,7 +114,7 @@ const Home = () => {
       </Container>
     </section>
       {/*  gallery sction start*/}
-      <section>
+      <section id="#gallary">
         <Container>
           <Row>
             <Col lg='12'>
