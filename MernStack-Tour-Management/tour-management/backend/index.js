@@ -18,6 +18,7 @@ import userroutes from './routes/user.js';
 import authroutes from './routes/auth.js';
 import reviewroutes from './routes/review.js';
 import bookingroutes from './routes/booking.js';
+import mailing from './routes/mailing.js';
 //for testing
 app.get('/',(req,res)=>{
     res.send('Hello World');
@@ -48,6 +49,7 @@ app.use("/api/v1/users",userroutes);
 app.use("/api/v1/auth",authroutes);
 app.use("/api/v1/review",reviewroutes);
 app.use("/api/v1/booking",bookingroutes);
+app.use("/api/v1/sendMail",mailing);
 
 
 
