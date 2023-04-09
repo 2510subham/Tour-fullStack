@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import "./newsletter.css"
 import { Container,Row,Col } from 'reactstrap'
 import maleTourist from "../assets/images/male-tourist.png"
@@ -6,12 +6,40 @@ import {Form,Button} from 'reactstrap';
 import {BASE_URL} from '../utils/Config';
 
 const NewsLetter = () => {
-    const handlesubmit = (e) => {
+    const url=`${BASE_URL}/sendMail`;
+    const [name, setName] = useState("");
+    const [email,setEmail]=useState("");
+    const handlesubmit = async (e) => {
         e.preventDefault();
-
         console.log('Submited');
+        console.log(name,email);
+        try
+        {
+            const res=await fetch(url,{
+                method:'Post',
+                headers:{
+                    'content-type':'application/json'
+                },
+                body:JSON.stringify({name:name,email:email}) 
+            })
+            const result=res.json();
+            if(!res.ok)
+            {
+                alert(result.message);
+            }
+            else
+            {   
+                alert(result.message)
+            }
+        }catch(err)
+        {
+            alert(err.message);
+        }
     }
-    
+    const hover1=()=>{
+        // document.getElementById("focusing").style.backgroundColor="rgb(0, 0, 0)";
+        document.getElementById("focusing").style.backgroundColor="rgb(0, 0, 0)"
+    }
   return (
     <section className='newsletter'>
         <Container>
@@ -19,11 +47,11 @@ const NewsLetter = () => {
                 <Col lg='6'>
                     <div className="newsletter__content">
                         <h2>Subscribe to get useful travelling information.</h2>
-                            <Form onSubmit={handlesubmit}method="POST">
+                            <Form onSubmit={handlesubmit} method="POST">
                         <div className="newsletter__input">
-                                <input type="text" placeholder="Name" name="name" id="" />
-                                <input type="email" placeholder='Email' name="email" id="" />
-                                <Button className="btn newsletter__btn" >Subscribe</Button>
+                                <input type="text" placeholder="Name" name="name" value={name} onChange={(e)=>setName(e.target.value)} />
+                                <input type="email" placeholder='Email' name="email" value={email} onChange={(e)=>setEmail(e.target.value)}/>
+                                <Button className="btn newsletter__btn" id="focusing" onClick={hover1}>Subscribe</Button>
                         </div>
                             </Form>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio, alias!</p>

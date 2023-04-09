@@ -31,16 +31,16 @@ router.post("/",async (req,res)=>{
             let maildetails = {
                 from: process.env.EMAIL,
                 to: req.body.email,
-                subject: "Travel-World",
-                text: `Thank you ${req.body.name} for subscribing to our website and we will send you the best deals and offers. `
+                subject: "Welcome to Travel-World",
+                text: `Thank you ${req.body.name} for subscribing our website , we will send you the best deals and offers in future.`
             }
             mailtransporter.sendMail(maildetails, function (err, data) {
                 if (err) {
-                    res.status(500).json({ message: "email not send"})
+                    res.status(500).json({message: "email not send"})
                 }
                 else {
                     console.log("email sent sucessfully")
-                    res.status(200).json({success:true,message:"mail sent successfully",data:savedSchema})
+                    res.status(200).json({success:true,message:"Subscribed",data:savedSchema})
                 }
             }
             )
