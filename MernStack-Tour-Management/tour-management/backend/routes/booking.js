@@ -1,10 +1,10 @@
 import express from "express";
 import { createbooking, getallbooking, getbooking } from "../controller/bookingController.js";
 const router=express.Router();
-import { verifyadmin, verifyuser } from "../utils/verifyToken.js";
+import { verifyAdmin, verifyUser } from "../utils/verifyToken.js";
 
 router.post("/",createbooking);
-router.get("/:id",verifyuser,getbooking);
-router.get("/",verifyadmin,getallbooking);
+router.get("/:id",verifyUser,getbooking);
+router.get("/",verifyAdmin,getallbooking);
 
 export default router;

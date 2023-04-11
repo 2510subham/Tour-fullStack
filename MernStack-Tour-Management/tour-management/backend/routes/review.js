@@ -1,8 +1,8 @@
 import express from "express";
 import { createreview } from "../controller/reviewController.js";
 const router=express.Router();
-import { verifyuser } from "../utils/verifyToken.js";
+import { verifyUser } from "../utils/verifyToken.js";
 
-router.post("/:tourId",createreview);
+router.post("/:tourId",verifyUser,createreview);
 
 export default router;
