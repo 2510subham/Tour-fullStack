@@ -3,7 +3,7 @@ import { createbooking, getallbooking, getbooking } from "../controller/bookingC
 const router=express.Router();
 import { verifyAdmin, verifyUser } from "../utils/verifyToken.js";
 
-router.post("/",createbooking);
+router.post("/",verifyUser,createbooking);
 router.get("/:id",verifyUser,getbooking);
 router.get("/",verifyAdmin,getallbooking);
 
