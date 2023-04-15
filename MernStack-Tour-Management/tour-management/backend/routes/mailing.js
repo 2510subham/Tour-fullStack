@@ -16,7 +16,7 @@ import nodemailer from "nodemailer";
 // })
 router.post("/",async (req,res)=>{
     console.log(req.body);
-    const mail=await new Subscribe(req.body);
+    const mail=await new Subscribe({name:req.body.name,email:req.body.email});
     try{
         const savedSchema=await mail.save();
             let mailtransporter = nodemailer.createTransport(
@@ -31,8 +31,8 @@ router.post("/",async (req,res)=>{
             let maildetails = {
                 from: process.env.EMAIL,
                 to: req.body.email,
-                subject: "Welcome to Travel-World",
-                text: `Thank you ${req.body.name} for subscribing our website , we will send you the best deals and offers in future.`
+                subject: req.body.subject,
+                text: req.body.message
             }
             mailtransporter.sendMail(maildetails, function (err, data) {
                 if (err) {

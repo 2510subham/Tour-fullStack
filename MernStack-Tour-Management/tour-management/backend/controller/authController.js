@@ -50,7 +50,7 @@ export const login = async (req, res) => {
             process.env.JWT_SECRET_KEY, { expiresIn: "15d" });
         //set token browser cookies and send the response to clinet
         res.cookie('accessToken', token,
-            { httpOnly: true, expires: token.expiresIn }).status(200).json({
+            { httpOnly: true,expires: token.expiresIn }).status(200).json({
                 token,
                 data: { ...rest },
                 role,

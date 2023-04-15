@@ -38,6 +38,8 @@ const Login = () => {
       if(!res.ok)
       {
         alert(result.message)
+        navigate('/login')
+        return dispatch({type:'LOGIN_FAILURE',payload:result.message})
       }
       dispatch({type:'LOGIN_SUCCESS',payload:result.data})
       navigate('/')

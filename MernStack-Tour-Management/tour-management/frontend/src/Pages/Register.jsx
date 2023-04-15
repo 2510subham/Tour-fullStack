@@ -34,7 +34,7 @@ const Register = () => {
       const result=await res.json();
       if(!res.ok)
       {
-        alert(result.message)
+        return alert(result.message)
       }
       dispatch({type:'REGISTER_SUCCESS'})//we pass type :'..' this will goto auth context page and there it matches it with switch cases
       navigate('/login')

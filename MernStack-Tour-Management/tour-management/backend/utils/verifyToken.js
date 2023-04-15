@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken"
-
 export const verifyToken = (req, res, next) => {
 
-    const token = req.cookies.accessToken;
+    const token = req;
+    console.log(token);
     if (!token) {
-        return res.status(401).json({ success: false, message: "you are not authorized" });
+        return res.status(401).json({ success: false, message: "you are not authorized 1" });
     }
     //if token is present then we will verify it
     jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
@@ -30,7 +30,7 @@ export const verifyAdmin= (req,res,next)=>{
         if(req.user.role==="admin"){
             next();
         }else{
-            return res.status(403).json({success:false,message:"you are not authorized"})
+            return res.status(403).json({success:false,message:"you are not authorized 2"})
             
         }
     })

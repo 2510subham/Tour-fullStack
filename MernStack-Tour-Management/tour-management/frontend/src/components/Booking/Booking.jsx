@@ -19,6 +19,29 @@ const Booking = ({tour,avgRating}) => {
   const handlechange=(e)=>{
     setBooking(prev=>({...prev,[e.target.id]:e.target.value}))
   };
+  const sendBookingMail=async()=>{
+    const url=`${BASE_URL}/sendMail`;
+    try{
+      const res=await fetch(url,{
+        method:'post',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify({name:booking.fullName,email:booking.userEmail,subject:"Tour Booked Successfully",message:`Dear ${booking.fullName},\n\nYour tour ${booking.tourName}  on ${booking.bookAt} has been booked successfully.\n\nThank you for choosing us.\n\n We will send you all details for your tour. \n\nRegards,\nTour Management Team`})
+    }
+      )
+      const result=await res.json();  
+      if(!res.ok)
+      {
+        return alert(result.message);
+      }
+
+    }
+      catch(err)
+      {
+        alert(err.message);
+      }
+    }
 
   const serviceFee=10;
   const navigate=useNavigate();
@@ -44,6 +67,7 @@ const Booking = ({tour,avgRating}) => {
       {
         return alert(result.message);
       }
+      await sendBookingMail();
       navigate("/thank-you");
     }catch(err)
     {
@@ -64,7 +88,7 @@ const Booking = ({tour,avgRating}) => {
       {/*===========booking form */}
       <div className="booking__form">
         <h5>Information</h5>
-        <Form className="booking__info-form" onSubmit={handleClick}>
+        <Form className="booking__info-form" onSubmit={handleClick} method="POST">
           <FormGroup>
             <input type="text" placeholder='full Name' id="fullName" required onChange={handlechange} />
           </FormGroup>
