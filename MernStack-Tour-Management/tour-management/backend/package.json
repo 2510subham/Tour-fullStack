@@ -5,8 +5,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemailer index.js",
     "start-dev": "nodemon index.js",
+    "build":"js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
