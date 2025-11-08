@@ -1,57 +1,63 @@
-import React,{useState,useContext} from 'react'
+import React, { useState, useContext } from 'react'
 import "../styles/login.css"
-import {Container,Row,Col,Form,FormGroup,Button} from 'reactstrap';
-import { Link,useNavigate } from 'react-router-dom';
+import "../styles/tour.css"
+import { Container, Row, Col, Form, FormGroup, Button, Spinner } from 'reactstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import loginimg from "../assets/images/login.png";
 import userIcon from "../assets/images/user.png";
 import { authContext } from '../context/authContext';
 import { BASE_URL } from '../utils/Config';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const [credentials, setcredentials] = useState({
-   email:undefined,
-   password:undefined
+    email: undefined,
+    password: undefined
   })
 
-  const {dispatch} = useContext(authContext);//we are using dispatch here to dispatch the action to auth context
-  const navigate=useNavigate();
+  const { dispatch } = useContext(authContext);//we are using dispatch here to dispatch the action to auth context
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
 
-  const handlechange=(e)=>{
-    setcredentials(prev=>({...prev,[e.target.id]:e.target.value}))
+  const handlechange = (e) => {
+    setcredentials(prev => ({ ...prev, [e.target.id]: e.target.value }))
   };
-  const handleClick=async (e)=>{
+  const handleClick = async (e) => {
     e.preventDefault();
-    dispatch({type:'LOGIN_START'});
-    try{
-      const res=await fetch(`${BASE_URL}/auth/login`,{
-        method:'post',
-        headers:{
-          'content-type':'application/json'
+    setLoading(true)
+    dispatch({ type: 'LOGIN_START' });
+    try {
+      const res = await fetch(`${BASE_URL}/auth/login`, {
+        method: 'post',
+        headers: {
+          'content-type': 'application/json'
         },
-        credentials:'include',
-        body:JSON.stringify(credentials)
+        credentials: 'include',
+        body: JSON.stringify(credentials)
       })
-      const result=await res.json();
+      const result = await res.json();
       console.log(result.data);
-      if(!res.ok)
-      {
-        alert(result.message)
+      if (!res.ok) {
+        toast.error(result.message)
         navigate('/login')
-        return dispatch({type:'LOGIN_FAILURE',payload:result.message})
+        setLoading(false)
+        return dispatch({ type: 'LOGIN_FAILURE', payload: result.message })
       }
-      dispatch({type:'LOGIN_SUCCESS',payload:result.data})
+      toast.success('Logged in successfully')
+      setLoading(false)
+      dispatch({ type: 'LOGIN_SUCCESS', payload: result.data })
       navigate('/')
-
-    }catch(err)
-    {
-      dispatch({type:'LOGIN_FAILURE',payload:err.message})
+    } catch (err) {
+      setLoading(false)
+      dispatch({ type: 'LOGIN_FAILURE', payload: err.message })
     }
 
   }
   return (
     <section>
+      <ToastContainer closeButton closeOnClick position='bottom-right' />
       <Container>
         <Row>
           <Col lg='8' className='m-auto'>
@@ -78,6 +84,13 @@ const Login = () => {
             </div>
           </Col>
         </Row>
+        {loading ? <Spinner
+
+          className="spin-container"
+          color="primary"
+        >
+          Loading...
+        </Spinner> : null}
       </Container>
     </section>
   )
