@@ -30,6 +30,7 @@ const Register = () => {
         headers: {
           'content-type': 'application/json'
         },
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify(credentials)
       })
       const result = await res.json();

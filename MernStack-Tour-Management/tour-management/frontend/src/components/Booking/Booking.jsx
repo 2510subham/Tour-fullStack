@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import './booking.css'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Form, FormGroup, ListGroup, ListGroupItem, Button } from 'reactstrap'
 import { authContext } from '../../context/authContext'
 import { BASE_URL } from '../../utils/Config.js'
@@ -24,50 +24,43 @@ const Booking = ({ tour, avgRating }) => {
   const handlechange = (e) => {
     setBooking(prev => ({ ...prev, [e.target.id]: e.target.value }))
   };
-  const sendBookingMail = async () => {
-    const url = `${BASE_URL}/sendMail`;
-    try {
-      const res = await fetch(url, {
-        method: 'post',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({ name: booking.fullName, email: booking.userEmail, subject: "Tour Booked Successfully", message: `Dear ${booking.fullName},\n\nYour tour ${booking.tourName}  on ${booking.bookAt} has been booked successfully.\n\nThank you for choosing us.\n\n We will send you all details for your tour. \n\nRegards,\nTour Management Team` })
-      }
-      )
-      const result = await res.json();
-      if (!res.ok) {
-        return toast.error(result?.message);
-      }
-      toast.success("Booking mail sent successfully");
-    }
-    catch (err) {
-      toast.error(err.message);
-    }
-  }
-
   const proceedPayment = async (user, booking, amount) => {
     console.log(user, booking, totalamount);
     const payload = {
       user, booking, amount
     }
     const res = await fetch(`${BASE_URL}/payment`, {
-      method: "POST", headers: {
+      method: "POST", 
+      headers: {
         'content-type': 'application/json'
       },
+      credentials: 'include', // Fixed: Include cookies for authentication
       body: JSON.stringify(payload)
     })
     const data = await res.json();
+    console.log("payment link data", data);
     if (!res.ok) {
-      return toast.error('Payment Not craeted ')
+      return toast.error('Payment Not created')
     }
-    navigate(data.short_url)
-
-
+    
+    // Redirect to Razorpay payment page
+    if (data.data && data.data.short_url) {
+      // Store booking info in sessionStorage to retrieve after payment
+      sessionStorage.setItem('pendingBooking', JSON.stringify({
+        bookingId: booking._id,
+        tourName: booking.tourName,
+        userEmail: booking.userEmail,
+        fullName: booking.fullName
+      }));
+      
+      // Redirect to payment gateway
+      window.location.href = data.data.short_url;
+    } else {
+      toast.error('Payment link not received');
+    }
   }
 
   const serviceFee = 10;
-  const navigate = useNavigate();
   const totalamount = Number(price) * Number(booking.guestSize) + Number(serviceFee)
   //send data to the server;
   const handleClick = async (e) => {
@@ -83,6 +76,7 @@ const Booking = ({ tour, avgRating }) => {
         headers: {
           'content-type': 'application/json'
         },
+        credentials: 'include', // Fixed: Include cookies for authentication
         body: JSON.stringify(booking)
       })
       const result = await res.json();
@@ -90,40 +84,11 @@ const Booking = ({ tour, avgRating }) => {
         return toast.error(result.message);
       }
       toast.success('Processing to payment');
-      const payment = await proceedPayment(user, result?.data, totalamount);
-      console.log(payment);
-//       {
-//   accept_partial: true,
-//   amount: 307,
-//   amount_paid: 0,
-//   cancelled_at: 0,
-//   created_at: 1762592372,
-//   currency: 'INR',
-//   customer: { email: 'abc@gmail.com' },
-//   description: 'Tour Booking Beautiful Snowy Mountains',
-//   expire_by: 0,
-//   expired_at: 0,
-//   first_min_partial_amount: 307,
-//   id: 'plink_RdBkMhSi5IIFMy',
-//   notes: { policy_name: 'Tour Booking Beautiful Snowy Mountains' },
-//   notify: { email: true, sms: true, whatsapp: false },
-//   payments: null,
-//   reference_id: '',
-//   reminder_enable: true,
-//   reminders: [],
-//   short_url: 'https://rzp.io/rzp/foOGNW0e',
-//   status: 'created',
-//   updated_at: 1762592372,
-//   upi_link: false,
-//   user_id: '',
-//   whatsapp_link: false
-// }
-      //now navigating to the oayment oage  from these res that i m getting from the server
+      // This will redirect to payment gateway, so code after this won't execute
+      await proceedPayment(user, result?.data, totalamount);
       
-
-      toast.success('Tour booked successfully');
-      await sendBookingMail();
-      navigate("/thank-you");
+      // Note: The code below will only execute if payment redirect fails
+      // After successful payment, user will be redirected back via Razorpay callback
     } catch (err) {
       toast.error(err.message);
     }
